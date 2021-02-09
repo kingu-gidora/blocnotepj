@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <!-- inspiration venue de http://jsfiddle.net/brx3xm59/ --> 
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+      crossorigin="anonymous">
+    </script>
+    <style>
+    #main {
+    background-image: url(http://www.pertinentdetail.org/charsheets/CoCBlank-large.gif);
+			  background-repeat: no-repeat;
+    font-family: caveat;
+    width: 100%;
+    height: 100%;
+}
+.foreign {
+    text-align: left;
+}
+.insideforeign {
+    display: inline-block;
+}
+svg {
+    border:1px solid black;
+
+}
+    </style>
+  </head>
+	    <body>
+	      <div id="toolbar">URL: <input id="imgUri" style="width: 150px;"/><button onClick="changebg()">OK</button>&nbsp;&nbsp;&nbsp;<span style="font-size:10px;"><b>Bloc-note pour fiche de perso</b> par <a href="https://kinguplatypus.wordpress.com/">Kingu Platypus</a></span></div>
+	      <div id="main">
+		<svg id="thesvg" width="100%" height="100%"></svg>
+	      </div>
+	    </body>
+	    <script>
+	      function changebg() {
+	      img=$("#imgUri")[0].value;
+	      $("#main")[0].style.backgroundImage="url("+img+")"
+	      }
+
+	    var mousedownonelement = false;
+
+	window.getlocalmousecoord = function (svg, evt) {
+	    var pt = svg.createSVGPoint();
+	    pt.x = evt.clientX;
+	    pt.y = evt.clientY;
+	    var localpoint = pt.matrixTransform(svg.getScreenCTM().inverse());
+	    localpoint.x = Math.round(localpoint.x);
+	    localpoint.y = Math.round(localpoint.y);
+	    return localpoint;
+	};
+
+	window.createtext = function (localpoint, svg) {
+	    var myforeign = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject')
+	    var textdiv = document.createElement("div");
+	    var textnode = document.createTextNode("Texte");
+	    textdiv.appendChild(textnode);
+	    textdiv.setAttribute("contentEditable", "true");
+	    textdiv.setAttribute("width", "auto");
+	    myforeign.setAttribute("width", "100%");
+	    myforeign.setAttribute("height", "100%");
+	    myforeign.classList.add("foreign"); //to make div fit text
+	    textdiv.classList.add("insideforeign"); //to make div fit text
+	    textdiv.addEventListener("mousedown", elementMousedown, false);
+	    myforeign.setAttributeNS(null, "transform", "translate(" + localpoint.x + " " + localpoint.y + ")");
+	    svg.appendChild(myforeign);
+	    myforeign.appendChild(textdiv);
+
+	};
+
+	function elementMousedown(evt) {
+	    mousedownonelement = true;
+	}
+
+
+	$(('#thesvg')).click(function (evt) {
+	    var svg = document.getElementById('thesvg');
+	    var localpoint = getlocalmousecoord(svg, evt);
+	    if (!mousedownonelement) {
+		createtext(localpoint, svg);
+	    } else {
+		mousedownonelement = false;
+	    }
+	});
+
+  </script>
+  
+</html>
